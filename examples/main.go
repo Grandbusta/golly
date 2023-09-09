@@ -1,7 +1,16 @@
 package main
 
-import "github.com/Grandbusta/golly"
+import (
+	"fmt"
+
+	"github.com/Grandbusta/golly"
+)
 
 func main() {
-	golly.Validate("Busta")
+	err := golly.Validate("Busta", &golly.Rules{
+		Required: false,
+		Min:      3,
+	},
+	)
+	fmt.Println(err)
 }
