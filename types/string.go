@@ -1,6 +1,9 @@
 package types
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/Grandbusta/golly/common"
 )
 
@@ -23,12 +26,13 @@ var messages = map[string]string{
 	"string.alphanum": "{label} must only contain alpha-numeric characters",
 	"string.base":     "{label} must be a string",
 	"string.minmax":   "max must me greater than min",
+	"string.length":   "{label} length must be {limit} characters long",
 }
 
-func StringValidate(str string, r *StringRules) error {
+func StringValidate(str string, r *StringRules, label string) error {
 	if r.Required {
 		if len(str) <= 0 {
-			common.Error(messages["string.empty"])
+			common.Error(messages["string.empty"], fmt.Sprintf("\"%v\"", label))
 		}
 	}
 	if r.Max != 0 && r.Max < r.Min {
@@ -36,13 +40,16 @@ func StringValidate(str string, r *StringRules) error {
 	}
 	if r.Min != 0 {
 		if len(str) < r.Min {
-			return common.Error(messages["string.min"])
+			return common.Error(messages["string.min"], fmt.Sprintf("\"%v\"", label), strconv.Itoa(r.Min))
 		}
 	}
 	if r.Max != 0 {
 		if len(str) > r.Max {
-			return common.Error(messages["string.max"])
+			return common.Error(messages["string.max"], fmt.Sprintf("\"%v\"", label), strconv.Itoa(r.Max))
 		}
+	}
+	if len(str) != r.Length {
+		common.Error(messages["string.length"], fmt.Sprintf("\"%v\"", label), strconv.Itoa(r.Length))
 	}
 	return nil
 }
