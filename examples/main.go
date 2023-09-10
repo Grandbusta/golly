@@ -7,9 +7,8 @@ import (
 )
 
 func main() {
-	err := golly.Validate("Busta", &golly.Rules{
-		Required: false,
-		Min:      3,
+	err := golly.Validate("Bu", &golly.Rules{
+		Min: 3,
 	},
 	)
 	fmt.Println(err)
