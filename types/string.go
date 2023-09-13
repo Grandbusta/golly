@@ -24,7 +24,6 @@ var messages = map[string]string{
 	"string.max":      "{label} must be less than or equal to {limit} characters long",
 	"string.min":      "{label} length must be at least {limit} characters long",
 	"string.alphanum": "{label} must only contain alpha-numeric characters",
-	"string.base":     "{label} must be a string",
 	"string.minmax":   "max must me greater than min",
 	"string.length":   "{label} length must be {limit} characters long",
 }
