@@ -30,9 +30,10 @@ var messages = map[string]string{
 }
 
 func StringValidate(str string, r *StringRules, label string) error {
+	fmt.Println(r.Required, len(str))
 	if r.Required {
 		if len(str) <= 0 {
-			common.Error(messages["string.empty"], fmt.Sprintf("\"%v\"", label))
+			return common.Error(messages["string.empty"], fmt.Sprintf("\"%v\"", label))
 		}
 	}
 	if r.Max != 0 && r.Max < r.Min {
@@ -48,8 +49,8 @@ func StringValidate(str string, r *StringRules, label string) error {
 			return common.Error(messages["string.max"], fmt.Sprintf("\"%v\"", label), strconv.Itoa(r.Max))
 		}
 	}
-	if len(str) != r.Length {
-		common.Error(messages["string.length"], fmt.Sprintf("\"%v\"", label), strconv.Itoa(r.Length))
+	if r.Length != 0 && len(str) != r.Length {
+		return common.Error(messages["string.length"], fmt.Sprintf("\"%v\"", label), strconv.Itoa(r.Length))
 	}
 	return nil
 }

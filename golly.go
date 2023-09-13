@@ -32,20 +32,23 @@ func newField(fieldValue reflect.Value, fieldRules *Rules) *field {
 	}
 }
 
-func Validate(data interface{}, rules *Rules) error {
+func validate(data interface{}, rules *Rules, label string) error {
 	dataType := reflect.TypeOf(data).String()
 
 	switch dataType {
 	case "string":
-		return stringValidation(data.(string), rules, "value")
+		return stringValidation(data.(string), rules, label)
 	case "int":
 		fmt.Println("getting int")
 	default:
 		fmt.Println(dataType)
 	}
-
 	fmt.Println("validated successfully", rules, dataType)
 	return nil
+}
+
+func Validate(data interface{}, rules *Rules) error {
+	return validate(data, rules, "value")
 }
 
 type H map[interface{}]*Rules
@@ -68,7 +71,11 @@ func ValidateStruct(data interface{}, h H) error {
 		if fieldValue.Kind() != reflect.Ptr {
 			// return NewInternalError(ErrFieldPointer(i))
 		}
-		findStructField(value, newField(fieldValue, r))
+		fs := findStructField(value, newField(fieldValue, r))
+		err := validate(fieldValue.Elem().Interface(), r, fs.Name)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -79,9 +86,8 @@ func findStructField(structValue reflect.Value, field *field) *reflect.StructFie
 		sf := structValue.Type().Field(i)
 		if fptr == structValue.Field(i).UnsafeAddr() {
 			if sf.Type == field.value.Elem().Type() {
-				fmt.Println(fptr, sf, sf.Type, field.value.Elem(), field.rules)
+				// fmt.Println(fptr, sf, sf.Type, field.value.Elem(), field.rules)
 				return &sf
-
 			}
 		}
 
@@ -94,9 +100,10 @@ func findStructField(structValue reflect.Value, field *field) *reflect.StructFie
 func stringValidation(str string, r *Rules, label string) error {
 	// Allowed rules for string
 	stringRules := &types.StringRules{
-		Min:    r.Min,
-		Max:    r.Max,
-		Length: r.Length,
+		Min:      r.Min,
+		Max:      r.Max,
+		Length:   r.Length,
+		Required: r.Required,
 	}
 	return types.StringValidate(str, stringRules, label)
 }
