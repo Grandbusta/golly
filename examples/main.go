@@ -25,7 +25,7 @@ func main() {
 		Lastname:  "grand",
 	}
 
-	golly.ValidateStruct(&user, golly.H{
+	err = golly.ValidateStruct(&user, golly.H{
 		&user.Firstname: &golly.Rules{Required: true},
 		&user.Lastname:  &golly.Rules{},
 	})

@@ -1,6 +1,7 @@
 package golly
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -17,6 +18,18 @@ type Rules struct {
 	Uppercase bool
 	Uri       bool
 	Required  bool
+}
+
+type field struct {
+	value reflect.Value
+	rules *Rules
+}
+
+func newField(fieldValue reflect.Value, fieldRules *Rules) *field {
+	return &field{
+		value: fieldValue,
+		rules: fieldRules,
+	}
 }
 
 func Validate(data interface{}, rules *Rules) error {
@@ -37,24 +50,45 @@ func Validate(data interface{}, rules *Rules) error {
 
 type H map[interface{}]*Rules
 
-func ValidateStruct(data interface{}, h H) {
-	// dataType := reflect.TypeOf(data).String()
-	// // fmt.Println(data, h, dataType)
-	v := reflect.ValueOf(data).Elem()
+func ValidateStruct(data interface{}, h H) error {
+	value := reflect.ValueOf(data)
 
-	for i := 0; i < v.NumField(); i++ {
-		fmt.Println(v.Field(i).UnsafeAddr(), v.Field(i), v.Type().Field(i).Anonymous)
+	if value.Kind() != reflect.Ptr || !value.IsNil() && value.Elem().Kind() != reflect.Struct {
+		// must be a pointer to a struct
+		return errors.New("Must be a pointer to a struct")
 	}
+	if value.IsNil() {
+		// treat a nil struct pointer as valid
+		return nil
+	}
+	value = value.Elem()
 
-	for k, _ := range h {
-		kptr := reflect.ValueOf(k).Pointer()
-		fmt.Println("gvd", reflect.ValueOf(k).Elem().Type(), kptr)
+	for k, r := range h {
+		fieldValue := reflect.ValueOf(k)
+		if fieldValue.Kind() != reflect.Ptr {
+			// return NewInternalError(ErrFieldPointer(i))
+		}
+		findStructField(value, newField(fieldValue, r))
 	}
-	// t := reflect.TypeOf(data)
-	// for i := 0; i < t.NumField(); i++ {
-	// 	fmt.Printf("%+v\n", t.Field(i))
-	// 	fmt.Println(t.Field(i).Type)
-	// }
+	return nil
+}
+
+func findStructField(structValue reflect.Value, field *field) *reflect.StructField {
+	fptr := field.value.Pointer()
+	for i := 0; i < structValue.NumField(); i++ {
+		sf := structValue.Type().Field(i)
+		if fptr == structValue.Field(i).UnsafeAddr() {
+			if sf.Type == field.value.Elem().Type() {
+				fmt.Println(fptr, sf, sf.Type, field.value.Elem(), field.rules)
+				return &sf
+
+			}
+		}
+
+		// check anonymous field
+
+	}
+	return nil
 }
 
 func stringValidation(str string, r *Rules, label string) error {
