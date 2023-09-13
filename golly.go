@@ -40,10 +40,21 @@ type H map[interface{}]*Rules
 func ValidateStruct(data interface{}, h H) {
 	// dataType := reflect.TypeOf(data).String()
 	// // fmt.Println(data, h, dataType)
-	t := reflect.TypeOf(data)
-	for i := 0; i < t.NumField(); i++ {
-		fmt.Printf("%+v\n", t.Field(i))
+	v := reflect.ValueOf(data).Elem()
+
+	for i := 0; i < v.NumField(); i++ {
+		fmt.Println(v.Field(i).UnsafeAddr(), v.Field(i), v.Type().Field(i).Anonymous)
 	}
+
+	for k, _ := range h {
+		kptr := reflect.ValueOf(k).Pointer()
+		fmt.Println("gvd", reflect.ValueOf(k).Elem().Type(), kptr)
+	}
+	// t := reflect.TypeOf(data)
+	// for i := 0; i < t.NumField(); i++ {
+	// 	fmt.Printf("%+v\n", t.Field(i))
+	// 	fmt.Println(t.Field(i).Type)
+	// }
 }
 
 func stringValidation(str string, r *Rules, label string) error {
