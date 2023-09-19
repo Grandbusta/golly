@@ -13,10 +13,9 @@ type User struct {
 
 func main() {
 	rules := golly.Rules{
-		Alphanum:  true,
-		Uppercase: true,
+		Email: true,
 	}
-	err := golly.Validate("ASAS", &rules)
+	err := golly.Validate("ASAS@m.com", &rules)
 
 	// user := User{
 	// 	Firstname: "sdff",

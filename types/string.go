@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"net/mail"
 	"regexp"
 	"strconv"
 	"strings"
@@ -79,6 +80,12 @@ func StringValidate(str string, r *StringRules, label string) error {
 	if r.Uppercase {
 		if !(strings.ToUpper(str) == str) {
 			return common.Error(stringMessages["uppercase"], fmt.Sprintf("\"%v\"", label))
+		}
+	}
+	if r.Email {
+		_, err := mail.ParseAddress(str)
+		if err != nil {
+			return common.Error(stringMessages["email"], fmt.Sprintf("\"%v\"", label))
 		}
 	}
 	return nil
