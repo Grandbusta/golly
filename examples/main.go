@@ -12,21 +12,21 @@ type User struct {
 }
 
 func main() {
-	// rules := golly.Rules{
-	// 	Min: 3,
-	// 	Max: 6,
-	// }
-	// err := golly.Validate("Bustats", &rules)
-
-	user := User{
-		Firstname: "sdff",
-		Lastname:  "gra",
+	rules := golly.Rules{
+		Alphanum:  true,
+		Uppercase: true,
 	}
+	err := golly.Validate("ASAS", &rules)
 
-	err := golly.ValidateStruct(&user, golly.H{
-		&user.Firstname: &golly.Rules{Required: true, Min: 3, Max: 4},
-		&user.Lastname:  &golly.Rules{Length: 3},
-	})
+	// user := User{
+	// 	Firstname: "sdff",
+	// 	Lastname:  "gr@",
+	// }
+
+	// err = golly.ValidateStruct(&user, golly.H{
+	// 	&user.Firstname: &golly.Rules{Required: true, Min: 3, Max: 4},
+	// 	&user.Lastname:  &golly.Rules{Length: 3, Alphanum: true},
+	// })
 	fmt.Println(err)
 
 }

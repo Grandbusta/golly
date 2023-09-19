@@ -39,7 +39,7 @@ func validate(data interface{}, rules *Rules, label string) error {
 	case "string":
 		return stringValidation(data.(string), rules, label)
 	case "int":
-		fmt.Println("getting int")
+		return intValidation(data.(int), rules, label)
 	default:
 		fmt.Println(dataType)
 	}
@@ -100,10 +100,24 @@ func findStructField(structValue reflect.Value, field *field) *reflect.StructFie
 func stringValidation(str string, r *Rules, label string) error {
 	// Allowed rules for string
 	stringRules := &types.StringRules{
-		Min:      r.Min,
-		Max:      r.Max,
-		Length:   r.Length,
-		Required: r.Required,
+		Min:       r.Min,
+		Max:       r.Max,
+		Length:    r.Length,
+		Required:  r.Required,
+		Alphanum:  r.Alphanum,
+		Email:     r.Email,
+		Lowercase: r.Lowercase,
+		Uppercase: r.Uppercase,
+		Uri:       r.Uri,
 	}
 	return types.StringValidate(str, stringRules, label)
+}
+
+func intValidation(num int, r *Rules, label string) error {
+	intRules := &types.IntRules{
+		Min: r.Min,
+		Max: r.Max,
+	}
+
+	return types.IntValidation(num, intRules, label)
 }
