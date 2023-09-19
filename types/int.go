@@ -1,8 +1,9 @@
 package types
 
 type IntRules struct {
-	Min int
-	Max int
+	Min  int
+	Max  int
+	Port bool
 }
 
 var intMessages = map[string]string{}
